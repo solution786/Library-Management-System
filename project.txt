@@ -1,0 +1,1225 @@
+-------------------------------------------------Library Management System------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.sql.*;
+import java.util.*;
+import java.io.*;
+import java.sql.DriverManager;
+import java.awt.event.*;
+public class LibraryManagementSystem {
+	
+	public static void main(String[] args) {
+		
+		new WelcomePage();
+	}
+
+}
+
+------------------------------------------ Welcome Page--------------------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.awt.event.*;
+class WelcomePage extends JFrame implements ActionListener 
+{
+	JFrame frame;
+	JLabel label;
+	JButton b1, b2;
+	WelcomePage(){
+		frame = new JFrame();
+		label = new JLabel();
+		b1 = new JButton("Admin Login");
+		b2 = new JButton("Librarian Login");
+		b1.setBounds(100,50,200,50);
+		b2.setBounds(100,150,200,50);
+		b1.addActionListener(this);
+		b2.addActionListener(this);
+		label.add(b1);
+		label.add(b2);
+		frame.add(label);
+		frame.setResizable(false);
+		frame.setTitle("Welcome-Library Management System");
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(400,400);
+	
+	}
+	
+	public WelcomePage(String s){
+		super(s);
+	}
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		if(e.getSource() == b1)
+		{
+			frame.dispose();
+			new AdminLoginPage();
+		}
+		if(e.getSource() == b2)
+		{
+			frame.dispose();
+			new LibrarianLoginPage();
+		}
+	}	
+}
+
+
+
+
+-------------------------------------------------Admin Login Page------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.awt.event.*;
+class AdminLoginPage extends JFrame implements ActionListener 
+{
+	private static final String PreparedStatement = null;
+	JFrame frame;
+	JLabel label,l1,l2,l3;
+	JButton button,back;
+	JTextField t1;
+	JPasswordField p1;
+	Connection con=null;
+	
+	AdminLoginPage()
+	{
+		con=(Connection)DB.dbconnect();
+		frame = new JFrame();
+		label = new JLabel();
+		l1 = new JLabel("ADMIN LOGIN");
+		l2 = new JLabel("Enter Name : ");
+		l3 = new JLabel("Enter Password : ");
+		t1 = new JTextField();
+		p1 = new JPasswordField();
+		button = new JButton("LOGIN");
+		back = new JButton("Back");
+		l1.setBounds(250,20,200,60);
+		l2.setBounds(50,100,150,20);
+		l3.setBounds(50,150,150,20);
+		t1.setBounds(250,100,200,30);
+		p1.setBounds(250,150,200,30);
+		button.setBounds(200,200,150,50);
+		back.setBounds(220,270,100,40);
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String user = t1.getText();
+					String pass = String.valueOf(p1.getPassword());
+					PreparedStatement pst =(PreparedStatement)con.prepareStatement("select * from adminlogin where username=? and password=?");
+					pst.setString(1, user);
+					pst.setString(2, pass);
+					ResultSet r = pst.executeQuery();
+					if(r.next())
+					{
+						JOptionPane.showMessageDialog(null,"Login Successful!!!");
+						frame.setVisible(false);
+						new AdminSection();
+					}else {
+						JOptionPane.showMessageDialog(null,"Please! enter correct details.");
+					}
+					
+				}catch(Exception e1)
+				{
+					e1.printStackTrace();
+				}	
+			
+		}});
+		
+		back.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				frame.setVisible(false);
+				new WelcomePage();	
+		}});
+		label.add(l1);
+		label.add(l2);
+		label.add(l3);
+		label.add(t1);
+		label.add(p1);
+		label.add(button);
+		label.add(back);
+		frame.add(label);
+		frame.setTitle("Admin Login-Library Management System");
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600,400);
+	}
+	public AdminLoginPage(String s){
+		super(s);
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+		
+}
+
+--------------------------------------------------------------- Admin Section -------------------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.awt.event.*;
+class AdminSection extends JFrame implements ActionListener
+{
+	JFrame frame;
+	JLabel label, l1;
+	JButton b1,b2,b3,b4;
+	AdminSection(){
+		frame = new JFrame();
+		label = new JLabel();
+		l1 = new JLabel("ADMIN SECTION");
+		b1 = new JButton("Add Librarian");
+		b2 = new JButton("View Librarian");
+		b3 = new JButton("Delete Librarian");
+		b4 = new JButton("Logout");
+		l1.setBounds(250,20,200,60);
+		b1.setBounds(200,100,200,50);
+		b2.setBounds(200,180,200,50);
+		b3.setBounds(200,250,200,50);
+		b4.setBounds(200,330,200,50);
+		b1.addActionListener(this);
+		b2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				new viewLibrarian();	
+		}});
+	
+		b3.addActionListener(this);
+		b4.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JOptionPane.showMessageDialog(null,"Logout Successful!!!");
+				frame.setVisible(false);
+				new WelcomePage();
+
+		
+		}});
+		label.add(l1);
+		label.add(b1);
+		label.add(b2);
+		label.add(b3);
+		label.add(b4);
+		frame.add(label);
+		frame.setTitle("Admin Section-Library Management System");
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600,600);
+	}
+	/*public AdminLoginPage(String s){
+		super(s);
+	}*/
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource() == b1)
+		{
+			frame.dispose();
+			new AddLibrarian();
+		}
+		if(e.getSource() == b3)
+		{
+			frame.dispose();
+			new DeleteLibrarian();
+		}
+	}
+	
+}
+
+------------------------------------------------- Add Librarian ---------------------------------------------
+import java.awt.*;
+
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.awt.event.*;
+class AddLibrarian extends JFrame implements ActionListener
+{
+	JFrame frame;
+	JLabel label, l1,l2,l3,l4,l5,l6,l7;
+	JPasswordField t2;
+	JButton b1,b2;
+	JTextField t1,t3,t4,t5,t6;
+	Connection con=null;
+	AddLibrarian(){
+		con=(Connection)DB.dbconnect();
+		frame = new JFrame();
+		label = new JLabel();
+		l1 = new JLabel("ADD LIBRARIAN");
+		l2 = new JLabel("Name : ");
+		l3 = new JLabel("Password : ");
+		l4 = new JLabel("E-mail : ");
+		l5 = new JLabel("Address : ");
+		l6 = new JLabel("City : ");
+		l7 = new JLabel("Contact No. : ");
+		t1 = new JTextField();
+		t2 = new JPasswordField();
+		t3 = new JTextField();
+		t4 = new JTextField();
+		t5 = new JTextField();
+		t6 = new JTextField();
+		b1 = new JButton("Add Librarian");
+		
+		b1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					String name = t1.getText();
+					String password = String.valueOf(t2.getPassword());
+					String email = t3.getText();
+					String address = t4.getText();
+					String city = t5.getText();
+					String contactNo = t6.getText();
+					
+					PreparedStatement pst = con.prepareStatement("insert into librarian(name,password,email,address,city,contactNo) values(?,?,?,?,?,?)");
+					pst.setString(1, name);
+					pst.setString(2, password);
+					pst.setString(3, email);
+					pst.setString(4, address);
+					pst.setString(5, city);
+					pst.setString(6, contactNo);
+					pst.executeUpdate();
+					JOptionPane.showMessageDialog(null, "Librarian added successfully!!!");
+					t1.setText("");
+					t2.setText("");
+					t3.setText("");
+					t4.setText("");
+					t5.setText("");
+					t6.setText("");
+				
+				}catch(Exception e1) {
+					e1.printStackTrace();
+				}
+			
+			
+			
+		}});
+		b2 = new JButton("Back");
+		b2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				frame.setVisible(false);
+				new AdminSection();
+			
+			
+		}});
+		
+		
+		
+		
+		
+		l1.setBounds(250,20,200,30);
+		l2.setBounds(50,70,150,20);
+		l3.setBounds(50,110,150,20);
+		l4.setBounds(50,150,150,20);
+		l5.setBounds(50,190,150,20);
+		l6.setBounds(50,230,150,20);
+		l7.setBounds(50,270,150,20);
+		t1.setBounds(250,70,150,20);
+		t2.setBounds(250,110,150,20);
+		t3.setBounds(250,150,150,20);
+		t4.setBounds(250,190,150,20);
+		t5.setBounds(250,230,150,20);
+		t6.setBounds(250,270,150,20);
+		b1.setBounds(200,330,200,40);
+		b2.setBounds(220,400,150,40);
+		
+		label.add(b1);
+		label.add(b2);
+		label.add(l1);
+		label.add(l2);
+		label.add(l3);
+		label.add(l4);
+		label.add(l5);
+		label.add(l6);
+		label.add(l7);
+		label.add(t1);
+		label.add(t2);
+		label.add(t3);
+		label.add(t4);
+		label.add(t5);
+		label.add(t6);
+		
+		frame.add(label);
+		frame.setTitle("Add Librarian-Library Management System");
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600,600);
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
+	
+}
+
+----------------------------------------------------------------------- Delete Librarian -------------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.awt.event.*;
+class DeleteLibrarian extends JFrame implements ActionListener{
+	JFrame frame;
+	JLabel label,l1,l2;
+	JButton b1,b2;
+	JTextField t1;
+	Connection con=null;
+	DeleteLibrarian(){
+		con=(Connection)DB.dbconnect();
+		frame = new JFrame();
+		label = new JLabel();
+		l1 = new JLabel("DELETE LIBRARIAN");
+		l2 = new JLabel("Enter Id : ");
+		t1 = new JTextField();
+		b1 = new JButton("Delete");
+		b1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			try {
+				int id = Integer.valueOf(t1.getText());
+				PreparedStatement pst = con.prepareStatement("delete from librarian where id=?");
+				pst.setInt(1,id);
+				int r = pst.executeUpdate();
+				JOptionPane.showMessageDialog(null,"Record deleted Successfully!!!");
+				t1.setText("");
+				
+			}catch(Exception e1)
+			{
+				e1.printStackTrace();
+			}	
+			
+		}});
+	
+		b2 = new JButton("Back");
+		b2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				frame.setVisible(false);
+				new AdminSection();	
+			
+		}});
+
+		l1.setBounds(120,20,150,40);
+		l2.setBounds(50,100,150,20);
+		t1.setBounds(130,100,150,30);
+		b1.setBounds(100,160,150,50);
+		b2.setBounds(120,240,100,40);
+		label.add(l1);
+		label.add(l2);
+		label.add(b1);
+		label.add(b2);
+		label.add(t1);
+		frame.add(label);
+		frame.setTitle("Delete Librarian-Library Management System");
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(400,400);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
+
+------------------------------------------------------ View Libraian ---------------------------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
+
+import com.mysql.cj.jdbc.result.ResultSetMetaData;
+
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.awt.event.*;
+class viewLibrarian extends JFrame {
+	JFrame frame;
+	JPanel contentPane;
+	JTable table;
+	viewLibrarian() {
+			frame = new JFrame();
+			setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			setBounds(100, 100, 450, 300);
+			contentPane = new JPanel();
+			contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+			contentPane.setLayout(new BorderLayout(0, 0));
+			setContentPane(contentPane);
+			
+			String data[][]=null;
+			String column[]=null;
+			try{
+				Connection con=DB.dbconnect();
+				PreparedStatement pst=con.prepareStatement("select * from librarian",ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+				ResultSet rs=pst.executeQuery();
+				
+				ResultSetMetaData rsmd=(ResultSetMetaData) rs.getMetaData();
+				int cols=rsmd.getColumnCount();
+				column=new String[cols];
+				for(int i=1;i<=cols;i++){
+					column[i-1]=rsmd.getColumnName(i);
+				}
+				
+				rs.last();
+				int rows=rs.getRow();
+				rs.beforeFirst();
+
+				data=new String[rows][cols];
+				int count=0;
+				while(rs.next()){
+					for(int i=1;i<=cols;i++){
+						data[count][i-1]=rs.getString(i);
+					}
+					count++;
+				}
+				con.close();
+			}catch(Exception e){System.out.println(e);}
+			
+			table = new JTable(data,column);
+			JScrollPane sp=new JScrollPane(table);
+			
+			contentPane.add(sp, BorderLayout.CENTER);
+			frame.add(contentPane);
+			frame.setTitle("View Librarians-Library Management System");
+			frame.setVisible(true);
+			frame.setResizable(false);
+			frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			frame.setSize(900,600);
+	}
+}
+
+
+--------------------------------------------------------------- Librarian Login Page -----------------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.awt.event.*;
+class LibrarianLoginPage extends JFrame implements ActionListener 
+{
+	JFrame frame;
+	JLabel label,l1,l2,l3;
+	JButton button,back;
+	JTextField t1;
+	JPasswordField p1;
+	Connection con=null;
+	LibrarianLoginPage()
+	{
+		con=(Connection)DB.dbconnect();
+		frame = new JFrame();
+		label = new JLabel();
+		l1 = new JLabel("LIBRARIAN LOGIN");
+		l2 = new JLabel("Enter Name : ");
+		l3 = new JLabel("Enter Password : ");
+		t1 = new JTextField();
+		p1 = new JPasswordField();
+		button = new JButton("LOGIN");
+		back = new JButton("Back");
+		l1.setBounds(250,20,200,60);
+		l2.setBounds(50,100,150,20);
+		l3.setBounds(50,150,150,20);
+		t1.setBounds(250,100,200,30);
+		p1.setBounds(250,150,200,30);
+		button.setBounds(200,200,150,50);
+		back.setBounds(220,300,100,40);
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					String name = t1.getText();
+					String pass = String.valueOf(p1.getPassword());
+					PreparedStatement pst =(PreparedStatement)con.prepareStatement("select * from librarian where name=? and password=?");
+					pst.setString(1, name);
+					pst.setString(2, pass);
+					ResultSet r = pst.executeQuery();
+					if(r.next())
+					{
+						JOptionPane.showMessageDialog(null,"Login Successful!!!");
+						frame.setVisible(false);
+						new LibrarianSection();
+					}else {
+						JOptionPane.showMessageDialog(null,"Please! enter correct details.");
+					}
+					
+				}catch(Exception e1)
+				{
+					e1.printStackTrace();
+				}
+		}});
+		back.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				frame.setVisible(false);
+				new WelcomePage();
+		}});
+		
+		label.add(l1);
+		label.add(l2);
+		label.add(l3);
+		label.add(t1);
+		label.add(p1);
+		label.add(button);
+		label.add(back);
+		frame.add(label);
+		frame.setTitle("Librarian Login-Library Management System");
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600,400);
+	}
+	public LibrarianLoginPage(String s){
+		super(s);
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+
+-------------------------------------------------------------Librarian Section -----------------------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.awt.event.*;
+class LibrarianSection extends JFrame implements ActionListener{
+	JFrame frame;
+	JLabel label, l1;
+	JButton b1,b2,b3,b4,b5,b6;
+	LibrarianSection(){
+		frame = new JFrame();
+		label = new JLabel();
+		l1 = new JLabel("LIBRARIAN SECTION");
+		b1 = new JButton("Add Book");
+		b2 = new JButton("View Book");
+		b3 = new JButton("Issue Book");
+		b4 = new JButton("View Issued Books");
+		b5 = new JButton("Return Book");
+		b6 = new JButton("Logout");
+		l1.setBounds(250,20,200,60);
+		b1.setBounds(200,100,200,50);
+		b2.setBounds(200,180,200,50);
+		b3.setBounds(200,250,200,50);
+		b4.setBounds(200,330,200,50);
+		b5.setBounds(200,400,200,50);
+		b6.setBounds(200,470,200,50);
+		b1.addActionListener(this);
+		b2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				new viewBooks();	
+		}});
+		
+
+		b3.addActionListener(this);
+		b4.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				new viewIssuedBooks();	
+		}});
+		b5.addActionListener(this);
+		b6.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JOptionPane.showMessageDialog(null,"Logout Successful!!!");
+				frame.setVisible(false);
+				new WelcomePage();
+			}});
+		label.add(l1);
+		label.add(b1);
+		label.add(b2);
+		label.add(b3);
+		label.add(b4);
+		label.add(b5);
+		label.add(b6);
+		frame.add(label);
+		frame.setTitle("Librarian Section-Library Management System");
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600,600);
+	}
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource() == b1)
+		{
+			frame.dispose();
+			new AddBooks();
+		}
+		
+		if(e.getSource() == b3)
+		{
+			frame.dispose();
+			new IssueBook();
+		}
+		if(e.getSource() == b5)
+		{
+			frame.dispose();
+			new ReturnBook();
+		}
+	}
+	
+
+}
+ 
+-------------------------------------------------------- Add Books -------------------------------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.awt.event.*;
+class AddBooks extends JFrame implements ActionListener{
+
+	JFrame frame;
+	JLabel label, l1,l2,l3,l4,l5,l6;
+	JTextField t1,t2,t3,t4,t5;
+	JButton b1,b2;
+	Connection con=null;
+	
+	AddBooks(){
+		con=(Connection)DB.dbconnect();
+		frame = new JFrame();
+		label = new JLabel();
+		l1 = new JLabel("ADD BOOKS");
+		l2 = new JLabel("Call No. : ");
+		l3 = new JLabel("Name : ");
+		l4 = new JLabel("Author : ");
+		l5 = new JLabel("Publisher : ");
+		l6 = new JLabel("Quantity : ");
+		t1 = new JTextField();
+		t2 = new JTextField();
+		t3 = new JTextField();
+		t4 = new JTextField();
+		t5 = new JTextField();
+		b1 = new JButton("Add Books");
+		b1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+				try {
+					String callNo = t1.getText();
+					String name = t2.getText();
+					String author = t3.getText();
+					String publisher = t4.getText();
+					int quantity = Integer.valueOf(t5.getText());
+					
+					
+					PreparedStatement pst = con.prepareStatement("insert into addbooks(callNo,name,author,publisher,quantity) values(?,?,?,?,?)");
+					pst.setString(1, callNo);
+					pst.setString(2, name);
+					pst.setString(3, author);
+					pst.setString(4, publisher);
+					pst.setInt(5, quantity);
+					
+					pst.executeUpdate();
+					JOptionPane.showMessageDialog(null, "Book added successfully!!!");
+					t1.setText("");
+					t2.setText("");
+					t3.setText("");
+					t4.setText("");
+					t5.setText("");
+					
+				
+				}catch(Exception e1) {
+					e1.printStackTrace();
+				}
+		}});
+		b2 = new JButton("Back");
+		b2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				frame.setVisible(false);
+				new LibrarianSection();
+		}});
+		l1.setBounds(250,20,200,30);
+		l2.setBounds(50,70,150,20);
+		l3.setBounds(50,110,150,20);
+		l4.setBounds(50,150,150,20);
+		l5.setBounds(50,190,150,20);
+		l6.setBounds(50,230,150,20);
+
+		t1.setBounds(250,70,150,20);
+		t2.setBounds(250,110,150,20);
+		t3.setBounds(250,150,150,20);
+		t4.setBounds(250,190,150,20);
+		t5.setBounds(250,230,150,20);
+		
+		b1.setBounds(200,330,200,40);
+		b2.setBounds(220,400,150,40);
+		
+		label.add(b1);
+		label.add(b2);
+		label.add(l1);
+		label.add(l2);
+		label.add(l3);
+		label.add(l4);
+		label.add(l5);
+		label.add(l6);
+	
+		label.add(t1);
+		label.add(t2);
+		label.add(t3);
+		label.add(t4);
+		label.add(t5);
+		
+		
+		frame.add(label);
+		frame.setTitle("Add Books-Library Management System");
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600,600);
+	}
+	
+	
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
+
+--------------------------------------------------------------- View Books -----------------------------------------------------------------
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
+
+import com.mysql.cj.jdbc.result.ResultSetMetaData;
+
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.awt.event.*;
+class viewBooks extends JFrame {
+	JFrame frame;
+	JPanel contentPane;
+	JTable table;
+	viewBooks() {
+			frame = new JFrame();
+			setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			setBounds(100, 100, 450, 300);
+			contentPane = new JPanel();
+			contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+			contentPane.setLayout(new BorderLayout(0, 0));
+			setContentPane(contentPane);
+			
+			String data[][]=null;
+			String column[]=null;
+			try{
+				Connection con=DB.dbconnect();
+				PreparedStatement pst=con.prepareStatement("select * from addbooks",ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+				ResultSet rs=pst.executeQuery();
+				
+				ResultSetMetaData rsmd=(ResultSetMetaData) rs.getMetaData();
+				int cols=rsmd.getColumnCount();
+				column=new String[cols];
+				for(int i=1;i<=cols;i++){
+					column[i-1]=rsmd.getColumnName(i);
+				}
+				
+				rs.last();
+				int rows=rs.getRow();
+				rs.beforeFirst();
+
+				data=new String[rows][cols];
+				int count=0;
+				while(rs.next()){
+					for(int i=1;i<=cols;i++){
+						data[count][i-1]=rs.getString(i);
+					}
+					count++;
+				}
+				con.close();
+			}catch(Exception e){System.out.println(e);}
+			
+			table = new JTable(data,column);
+			JScrollPane sp=new JScrollPane(table);
+			
+			contentPane.add(sp, BorderLayout.CENTER);
+			frame.add(contentPane);
+			frame.setTitle("View Books-Library Management System");
+			frame.setVisible(true);
+			frame.setResizable(false);
+			frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			frame.setSize(900,600);
+	}
+}
+
+
+
+------------------------------------------------------------------ Issue Books --------------------------------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.awt.event.*;
+class IssueBook extends JFrame implements ActionListener{
+	JFrame frame;
+	JLabel label, l1,l2,l3,l4,l5,l6;
+	JTextField t1,t2,t3,t4,t5;
+	JButton b1,b2;
+	Connection con=null;
+	IssueBook(){
+		con=(Connection)DB.dbconnect();
+		frame = new JFrame();
+		label = new JLabel();
+		l1 = new JLabel("ISSUE BOOK");
+		l2 = new JLabel("Book Call No. : ");
+		l3 = new JLabel("Student id : ");
+		l4 = new JLabel("Student Name : ");
+		l5 = new JLabel("Student Contact No. : ");
+		l6 = new JLabel("*Note - Please check Student id carefully before Issuing Book!");
+		t1 = new JTextField();
+		t2 = new JTextField();
+		t3 = new JTextField();
+		t4 = new JTextField();
+		
+		b1 = new JButton("Issue Book");
+		b1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					String bookCallNo = t1.getText();
+					int StudentId = Integer.valueOf(t2.getText());
+					String StudentName = t3.getText();
+					String StudentContactNo = t4.getText();
+					PreparedStatement pst = con.prepareStatement("insert into issuebooks(bookCallNo,studentId,studentName,studentContact) values(?,?,?,?)");
+					pst.setString(1, bookCallNo);
+					pst.setInt(2, StudentId);
+					pst.setString(3, StudentName);
+					pst.setString(4, StudentContactNo);
+					pst.executeUpdate();
+					JOptionPane.showMessageDialog(null, "Book issued successfully!!!");
+					t1.setText("");
+					t2.setText("");
+					t3.setText("");
+					t4.setText("");
+				}catch(Exception e1) {
+					e1.printStackTrace();
+				}
+	
+		}});
+	
+		b2 = new JButton("Back");
+		b2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				frame.setVisible(false);
+				new LibrarianSection();	
+		}});
+		l1.setBounds(250,20,200,30);
+		l2.setBounds(50,70,150,20);
+		l3.setBounds(50,110,150,20);
+		l4.setBounds(50,150,150,20);
+		l5.setBounds(50,190,150,20);
+		l6.setBounds(50,230,550,10);
+
+		t1.setBounds(250,70,150,20);
+		t2.setBounds(250,110,150,20);
+		t3.setBounds(250,150,150,20);
+		t4.setBounds(250,190,150,20);
+		
+		
+		b1.setBounds(200,260,200,40);
+		b2.setBounds(220,330,150,40);
+		
+		label.add(b1);
+		label.add(b2);
+		label.add(l1);
+		label.add(l2);
+		label.add(l3);
+		label.add(l4);
+		label.add(l5);
+		label.add(l6);
+		label.add(t1);
+		label.add(t2);
+		label.add(t3);
+		label.add(t4);
+		frame.add(label);
+		frame.setTitle("Issue Book-Library Management System");
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600,600);
+	}
+	
+	
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+
+---------------------------------------------------------------------- View Issue Books ----------------------------------------------------------
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
+
+import com.mysql.cj.jdbc.result.ResultSetMetaData;
+
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.awt.event.*;
+class viewIssuedBooks extends JFrame {
+	JFrame frame;
+	JPanel contentPane;
+	JTable table;
+	viewIssuedBooks() {
+			frame = new JFrame();
+			setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			setBounds(100, 100, 450, 300);
+			contentPane = new JPanel();
+			contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+			contentPane.setLayout(new BorderLayout(0, 0));
+			setContentPane(contentPane);
+			
+			String data[][]=null;
+			String column[]=null;
+			try{
+				Connection con=DB.dbconnect();
+				PreparedStatement pst=con.prepareStatement("select * from issuebooks",ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+				ResultSet rs=pst.executeQuery();
+				
+				ResultSetMetaData rsmd=(ResultSetMetaData) rs.getMetaData();
+				int cols=rsmd.getColumnCount();
+				column=new String[cols];
+				for(int i=1;i<=cols;i++){
+					column[i-1]=rsmd.getColumnName(i);
+				}
+				
+				rs.last();
+				int rows=rs.getRow();
+				rs.beforeFirst();
+
+				data=new String[rows][cols];
+				int count=0;
+				while(rs.next()){
+					for(int i=1;i<=cols;i++){
+						data[count][i-1]=rs.getString(i);
+					}
+					count++;
+				}
+				con.close();
+			}catch(Exception e){System.out.println(e);}
+			
+			table = new JTable(data,column);
+			JScrollPane sp=new JScrollPane(table);
+			
+			contentPane.add(sp, BorderLayout.CENTER);
+			frame.add(contentPane);
+			frame.setTitle("View Issued Books-Library Management System");
+			frame.setVisible(true);
+			frame.setResizable(false);
+			frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+			frame.setSize(900,600);
+	}
+}
+
+--------------------------------------------------------- Return Books ---------------------------------------------------------------
+import java.awt.*;
+import javax.swing.*;
+import java.util.*;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.awt.event.*;
+class ReturnBook extends JFrame implements ActionListener{
+	JFrame frame;
+	JLabel label, l1,l2,l3,l4;
+	JTextField t1,t2;
+	JButton b1,b2;
+	Connection con=null;
+	ReturnBook(){
+		con=(Connection)DB.dbconnect();
+		frame = new JFrame();
+		label = new JLabel();
+		l1 = new JLabel("RETURN BOOK");
+		l2 = new JLabel("Book Call No. : ");
+		l3 = new JLabel("Student id : ");
+		l4 = new JLabel("*Note - Check the book properly!");
+		t1 = new JTextField();
+		t2 = new JTextField();
+		
+		b1 = new JButton("Return Book");
+		b1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				try {
+					String bookCallNo = t1.getText();
+					int studentId = Integer.valueOf(t2.getText());
+					PreparedStatement pst =(PreparedStatement)con.prepareStatement("select bookCallNo,studentId from issuebooks where bookCallNo=? and studentId=?");
+					pst.setString(1, bookCallNo);
+					pst.setInt(2, studentId);
+					ResultSet r = pst.executeQuery();
+					if(r.next())
+					{
+						JOptionPane.showMessageDialog(null,"Book return successfully!!!");
+						t1.setText("");
+						t2.setText("");
+						
+					}else {
+						JOptionPane.showMessageDialog(null,"Sorry, Unable to return Book!!!");
+					}
+					
+				}catch(Exception e1)
+				{
+					e1.printStackTrace();
+				}
+			
+		}});
+		b2 = new JButton("Back");
+		b2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				frame.setVisible(false);
+				new LibrarianSection();	
+		}});
+
+		l1.setBounds(250,20,200,30);
+		l2.setBounds(50,70,150,20);
+		l3.setBounds(50,110,150,20);
+		l4.setBounds(50,150,300,20);
+
+		t1.setBounds(250,70,150,20);
+		t2.setBounds(250,110,150,20);
+		
+		
+		b1.setBounds(200,200,200,40);
+		b2.setBounds(220,270,150,40);
+		
+		label.add(b1);
+		label.add(b2);
+		label.add(l1);
+		label.add(l2);
+		label.add(l3);
+		label.add(l4);
+		label.add(t1);
+		label.add(t2);
+		frame.add(label);
+		frame.setTitle("Return Book-Library Management System");
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(600,400);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}
+
+---------------------------------------------------------------- DataBase Connection -----------------------------------------------------
+import java.sql.*;
+
+
+public class DB {
+	Connection con=null;
+	java.sql.PreparedStatement pst;
+	public static Connection dbconnect()
+	{
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection conn = (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/LibraryManagementSystem","root","");
+			return conn;
+		}
+		catch(Exception e2) {
+			System.out.println(e2);
+			return null;
+		}
+	}
+	
+}
+
+
+
+
+
+
